@@ -76,7 +76,6 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
       const { data, error } = await supabase
         .from("books")
         .select("*")
-        .eq("is_active", true)
         .order("created_at", { ascending: false });
       try {
         if (error) throw error;
