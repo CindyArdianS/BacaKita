@@ -6,13 +6,14 @@ import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Image from "next/image";
 
 type Props = {
   openSidebar: () => void;
 };
 
 export default function Navbar({ openSidebar }: Props) {
-  const { session } = useAuth();
+  const { session, userData } = useAuth();
   const router = useRouter();
   const [cartCount, setCartCount] = useState(0);
   const [search, setSearch] = useState("");
@@ -107,7 +108,13 @@ export default function Navbar({ openSidebar }: Props) {
             className={styles.subscriptionBtn}
             onClick={() => router.push("/dashboard/profil")}
           >
-            <User size={18} />
+            {userData?.avatar_url ? (
+              <div style={{ position: "relative", width: 22, height: 22, borderRadius: "50%", overflow: "hidden" }}>
+                <Image src={userData.avatar_url} alt="Profile" fill style={{ objectFit: "cover" }} />
+              </div>
+            ) : (
+              <User size={18} />
+            )}
             Profil
           </button>
         )}

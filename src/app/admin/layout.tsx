@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
@@ -23,17 +23,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const bypass = new URLSearchParams(window.location.search).get("bypass") === "true";
 
-    // Jika userData sudah ada dan bukan admin, redirect
-    // Jika userData masih null (belum dimuat dari DB), tunggu dulu
-    if (!bypass && userData !== null && userData?.role !== "admin") {
-      router.push("/dashboard");
+    // Profile yang gagal dibaca bukan lagi state loading. Keluar dari halaman
+    // admin agar spinner tidak ditampilkan selamanya.
+    if (!bypass && (!userData || userData.role !== "admin")) {
+      router.replace("/dashboard");
     }
   }, [session, userData, loading, router]);
 
   const bypass = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("bypass") === "true";
 
-  // Tampilkan loading saat: auth masih loading ATAU session ada tapi userData belum dimuat
-  if (!bypass && (loading || (session && userData === null))) {
+  // AuthContext menyelesaikan `loading` untuk hasil sukses, gagal, dan profil
+  // tidak ditemukan. `userData === null` adalah hasil otorisasi, bukan loading.
+  if (!bypass && loading) {
     return (
       <div style={{ display: "flex", height: "100vh", alignItems: "center", justifyContent: "center", background: "#F7F2ED", flexDirection: "column", gap: 16 }}>
         <Loader2 size={32} style={{ color: "#7A5230", animation: "spin 1s linear infinite" }} />

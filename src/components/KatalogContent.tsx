@@ -5,9 +5,47 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Star, Search, SlidersHorizontal, X, ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import PublicNavbar from "@/components/PublicNavbar";
-import { books, genres, Book } from "@/lib/data/books";
+import { supabase } from "@/lib/supabase";
 import styles from "@/app/katalog/katalog.module.css";
 
+export type DbBook = {
+  id: string;
+  title: string;
+  author: string;
+  cover_url: string;
+  price: number;
+  old_price?: number;
+  rating: number;
+  review_count: number;
+  badge?: string;
+  genre: string;
+  pages: number;
+  publisher: string;
+  publish_year: number;
+  description: string;
+  is_premium: boolean;
+  is_active: boolean;
+  cover?: string | null;
+  category?: string | null;
+  harga?: number | null;
+  created_at: string;
+};
+
+function normalizeBook(book: DbBook): DbBook {
+  return {
+    ...book,
+    cover_url: book.cover || book.cover_url || "",
+    genre: book.category || book.genre || "Lainnya",
+    price: book.harga ?? book.price ?? 0,
+    rating: book.rating ?? 0,
+    review_count: book.review_count ?? 0,
+  };
+}
+
+const GENRES = [
+  "Semua", "Novel", "Romance", "Fantasi", "Horor",
+  "Komik", "Teknologi", "Bisnis", "Self Improvement", "Sejarah", "Agama",
+];
 const BADGES = ["Semua", "Best Seller", "Editor's Pick", "Populer", "New"];
 const SORTS = [
   { label: "Relevansi", value: "default" },
@@ -22,6 +60,8 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const [allBooks, setAllBooks] = useState<DbBook[]>([]);
+  const [loadingBooks, setLoadingBooks] = useState(true);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [inputVal, setInputVal] = useState(searchParams.get("q") ?? "");
   const [genre, setGenre] = useState("Semua");
@@ -30,22 +70,36 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
   const [page, setPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
 
+  useEffect(() => {
+    const fetchBooks = async () => {
+      setLoadingBooks(true);
+      const { data, error } = await supabase
+        .from("books")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+      try {
+        if (error) throw error;
+        setAllBooks((data || []).map((book) => normalizeBook(book as DbBook)));
+      } finally {
+        setLoadingBooks(false);
+      }
+    };
+    fetchBooks();
+  }, []);
+
   // Sync URL params
   useEffect(() => {
     const q = searchParams.get("q") ?? "";
     const b = searchParams.get("badge") ?? "Semua";
-    // eslint-disable-next-line
     setQuery(q);
-    // eslint-disable-next-line
     setInputVal(q);
-    // eslint-disable-next-line
     setBadge(b);
-    // eslint-disable-next-line
     setPage(1);
   }, [searchParams]);
 
-  const filtered = useMemo<Book[]>(() => {
-    let result = [...books];
+  const filtered = useMemo<DbBook[]>(() => {
+    let result = [...allBooks];
 
     if (query.trim()) {
       const q = query.toLowerCase();
@@ -69,18 +123,18 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
         result.sort((a, b) => b.rating - a.rating);
         break;
       case "price_asc":
-        result.sort((a, b) => a.priceNum - b.priceNum);
+        result.sort((a, b) => a.price - b.price);
         break;
       case "price_desc":
-        result.sort((a, b) => b.priceNum - a.priceNum);
+        result.sort((a, b) => b.price - a.price);
         break;
       case "newest":
-        result.sort((a, b) => b.year - a.year);
+        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
     }
 
     return result;
-  }, [query, genre, badge, sort]);
+  }, [query, genre, badge, sort, allBooks]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / BOOKS_PER_PAGE));
   const pageBooks = filtered.slice((page - 1) * BOOKS_PER_PAGE, page * BOOKS_PER_PAGE);
@@ -103,6 +157,9 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
 
   const hasFilters = query || genre !== "Semua" || badge !== "Semua" || sort !== "default";
 
+  const formatPrice = (price: number) =>
+    price === 0 ? "Gratis" : `Rp${price.toLocaleString("id-ID")}`;
+
   return (
     <div className={styles.page}>
       {!hideNavbar && <PublicNavbar />}
@@ -111,7 +168,7 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
       <section className={styles.header}>
         <div className={styles.headerContent}>
           <h1>Katalog Buku</h1>
-          <p>Temukan buku favoritmu dari {books.length}+ judul pilihan</p>
+          <p>Temukan buku favoritmu dari {allBooks.length}+ judul pilihan</p>
         </div>
 
         {/* SEARCH BAR */}
@@ -149,7 +206,7 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
           <div className={styles.filterSection}>
             <h4>Genre</h4>
             <div className={styles.filterChips}>
-              {genres.map((g) => (
+              {GENRES.map((g) => (
                 <button
                   key={g}
                   className={`${styles.chip} ${genre === g ? styles.chipActive : ""}`}
@@ -210,8 +267,13 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
             </button>
           </div>
 
-          {/* GRID */}
-          {pageBooks.length > 0 ? (
+          {/* LOADING */}
+          {loadingBooks ? (
+            <div style={{ textAlign: "center", padding: "80px 0", color: "#9e8268" }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>📚</div>
+              <p>Memuat buku...</p>
+            </div>
+          ) : pageBooks.length > 0 ? (
             <div className={styles.bookGrid}>
               {pageBooks.map((book) => (
                 <div
@@ -221,14 +283,18 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
                 >
                   <div className={styles.coverWrap}>
                     {book.badge && <span className={styles.badge}>{book.badge}</span>}
-                    {book.isPremium && <span className={styles.premiumBadge}>👑 Premium</span>}
-                    <Image
-                      src={book.cover}
-                      alt={book.title}
-                      fill
-                      sizes="(max-width:768px) 50vw, 220px"
-                      style={{ objectFit: "cover" }}
-                    />
+                    {book.is_premium && <span className={styles.premiumBadge}>👑 Premium</span>}
+                    {book.cover_url ? (
+                      <Image
+                        src={book.cover_url}
+                        alt={book.title}
+                        fill
+                        sizes="(max-width:768px) 50vw, 220px"
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div style={{ width: "100%", height: "100%", background: "#f0ece4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>📖</div>
+                    )}
                   </div>
                   <div className={styles.bookInfo}>
                     <h3>{book.title}</h3>
@@ -237,13 +303,13 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
                       <span className={styles.rating}>
                         <Star size={12} fill="#FDBA12" color="#FDBA12" />
                         {book.rating}
-                        <span className={styles.reviews}>({book.reviewCount})</span>
+                        <span className={styles.reviews}>({book.review_count})</span>
                       </span>
                       <span className={styles.genreTag}>{book.genre}</span>
                     </div>
                     <div className={styles.priceRow}>
-                      {book.oldPrice && <span className={styles.oldPrice}>{book.oldPrice}</span>}
-                      <strong className={styles.price}>{book.price}</strong>
+                      {book.old_price && <span className={styles.oldPrice}>{formatPrice(book.old_price)}</span>}
+                      <strong className={styles.price}>{formatPrice(book.price)}</strong>
                     </div>
                   </div>
                 </div>
@@ -261,7 +327,7 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
           )}
 
           {/* PAGINATION */}
-          {totalPages > 1 && (
+          {!loadingBooks && totalPages > 1 && (
             <div className={styles.pagination}>
               <button
                 className={styles.pageBtn}

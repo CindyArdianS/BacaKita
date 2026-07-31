@@ -1,12 +1,5 @@
 import "./globals.css";
-import { Poppins } from "next/font/google";
 import { AuthProvider } from "@/lib/AuthContext";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 export const metadata = {
   title: "BacaKita",
@@ -20,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={poppins.className}>
+      <body style={{ fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif" }}>
         <AuthProvider>
           {children}
         </AuthProvider>

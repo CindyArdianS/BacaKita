@@ -17,15 +17,26 @@ export default function RightPanel() {
   };
 
   // Nama pengguna dari metadata (yang diset waktu register)
-  const displayName = user?.user_metadata?.nama || user?.email?.split("@")[0] || "Pembaca";
+  const displayName = userData?.nama || user?.user_metadata?.nama || user?.email?.split("@")[0] || "Pembaca";
   const initial = displayName.charAt(0).toUpperCase();
+  const avatarUrl = userData?.avatar_url || null;
 
   return (
     <aside className={styles.rightPanel}>
 
       <div className={styles.profileCard}>
-        <div className={styles.profileAvatar}>
-          {initial}
+        <div className={styles.profileAvatar} style={{ position: "relative", overflow: "hidden" }}>
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt={displayName}
+              fill
+              sizes="80px"
+              style={{ objectFit: "cover", borderRadius: "50%" }}
+            />
+          ) : (
+            initial
+          )}
         </div>
         <h3 style={{ textTransform: "capitalize" }}>{displayName}</h3>
         <p>{user?.email}</p>
@@ -88,15 +99,6 @@ export default function RightPanel() {
         <span>68% selesai</span>
       </div>
 
-      {/* Target */}
-      <div className={styles.goalCard}>
-        <h4>Target Bulan Ini</h4>
-        <h2>12 Buku</h2>
-        <p>
-          Kamu sudah menyelesaikan
-          <strong> 8 Buku </strong>
-        </p>
-      </div>
 
       {/* Premium */}
       <div className={styles.memberCard}>

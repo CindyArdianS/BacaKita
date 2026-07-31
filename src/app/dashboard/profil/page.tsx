@@ -162,6 +162,7 @@ export default function ProfilPage() {
   const displayEmail = userData?.email || session?.user?.email || "";
   const displayRole = userData?.role || "customer";
   const displayAvatar = avatarUrl || userData?.avatar_url || "";
+  const isAdmin = userData?.role === "admin";
 
   if (!session) {
     return (
@@ -217,7 +218,7 @@ export default function ProfilPage() {
                   Role: {displayRole === 'admin' ? "Admin" : "Customer"}
                 </span>
               </div>
-              {displayRole === 'admin' && (
+              {isAdmin && (
                 <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
                   <button 
                     onClick={() => router.push("/admin")}
@@ -248,15 +249,6 @@ export default function ProfilPage() {
               <span style={{ fontSize: 32, fontWeight: 800, color: "#22c55e" }}>{stats.selesaiBaca}</span>
             </div>
 
-            <div style={{ background: "white", padding: 20, borderRadius: 12, border: "1px solid #ece5dd", display: "flex", flexDirection: "column", gap: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#6b5744" }}>
-                <Settings size={18} />
-                <span style={{ fontSize: 14, fontWeight: 600 }}>Target Baca (Bulan Ini)</span>
-              </div>
-              <span style={{ fontSize: 32, fontWeight: 800, color: "#3b82f6" }}>
-                {stats.progressBulanIni} / {stats.targetBulanIni || "-"}
-              </span>
-            </div>
           </div>
         </div>
       )}

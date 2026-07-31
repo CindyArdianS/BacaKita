@@ -6,9 +6,10 @@ import { useAuth } from "@/lib/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import Image from "next/image";
 
 export default function PublicNavbar() {
-  const { session } = useAuth();
+  const { session, userData } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -81,7 +82,13 @@ export default function PublicNavbar() {
 
           {session ? (
             <button className={styles.profileBtn} onClick={() => router.push("/dashboard/profil")}>
-              <User size={18} />
+              {userData?.avatar_url ? (
+                <div style={{ position: "relative", width: 20, height: 20, borderRadius: "50%", overflow: "hidden" }}>
+                  <Image src={userData.avatar_url} alt="Profile" fill style={{ objectFit: "cover" }} />
+                </div>
+              ) : (
+                <User size={18} />
+              )}
               Profil
             </button>
           ) : (
@@ -162,7 +169,13 @@ export default function PublicNavbar() {
                 className={`${styles.mobileLink} ${pathname.startsWith("/dashboard/profil") ? styles.mobileLinkActive : ""}`}
                 onClick={() => nav("/dashboard/profil")}
               >
-                <User size={20} />
+                {userData?.avatar_url ? (
+                  <div style={{ position: "relative", width: 20, height: 20, borderRadius: "50%", overflow: "hidden" }}>
+                    <Image src={userData.avatar_url} alt="Profile" fill style={{ objectFit: "cover" }} />
+                  </div>
+                ) : (
+                  <User size={20} />
+                )}
                 Profil Saya
               </button>
 

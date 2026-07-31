@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/AuthContext";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import styles from "../dashboard.module.css";
 
 type Props = {
@@ -15,7 +16,7 @@ type Props = {
 export default function Sidebar({ isOpen, closeSidebar }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const { session } = useAuth();
+  const { session, userData } = useAuth();
   const [cartCount, setCartCount] = useState(0);
   const [userName, setUserName] = useState("");
 
@@ -100,9 +101,14 @@ export default function Sidebar({ isOpen, closeSidebar }: Props) {
               borderRadius: "50%",
               background: "#7a5230",
               display: "flex", alignItems: "center", justifyContent: "center",
-              color: "white", fontWeight: 700, fontSize: 16, flexShrink: 0
+              color: "white", fontWeight: 700, fontSize: 16, flexShrink: 0,
+              position: "relative", overflow: "hidden"
             }}>
-              {userName.charAt(0).toUpperCase()}
+              {userData?.avatar_url ? (
+                <Image src={userData.avatar_url} alt="Profile" fill style={{ objectFit: "cover" }} />
+              ) : (
+                userName.charAt(0).toUpperCase()
+              )}
             </div>
             <div>
               <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a1a" }}>{userName}</div>

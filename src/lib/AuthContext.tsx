@@ -1,98 +1,90 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "./supabase";
 import { Session, User } from "@supabase/supabase-js";
 
+type UserProfile = { role?: string; [key: string]: any };
 type AuthContextType = {
   session: Session | null;
   user: User | null;
-  userData: any | null;
+  userData: UserProfile | null;
   loading: boolean;
 };
 
-const AuthContext = createContext<AuthContextType>({
-  session: null,
-  user: null,
-  userData: null,
-  loading: true,
-});
+const AuthContext = createContext<AuthContextType>({ session: null, user: null, userData: null, loading: true });
+const AUTH_TIMEOUT_MS = 15_000;
+
+function withTimeout<T>(promise: PromiseLike<T>, operation: string) {
+  return new Promise<T>((resolve, reject) => {
+    const timeout = window.setTimeout(() => reject(new Error(`${operation} melebihi batas waktu.`)), AUTH_TIMEOUT_MS);
+    Promise.resolve(promise).then(
+      (value) => { window.clearTimeout(timeout); resolve(value); },
+      (error) => { window.clearTimeout(timeout); reject(error); }
+    );
+  });
+}
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<any | null>(null);
+  const [userData, setUserData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const requestId = useRef(0);
 
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserData(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserData(session.user.id);
-      } else {
-        setUserData(null);
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const fetchUserData = async (userId: string) => {
+  const fetchUserData = async (currentUser: User, id: number) => {
     try {
-      let { data } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", userId)
-        .maybeSingle();
+      const { data, error } = await withTimeout(
+        supabase.from("users").select("*").eq("id", currentUser.id).maybeSingle(),
+        "Mengambil profil pengguna"
+      );
+      if (error) throw error;
 
-      if (!data) {
-        const { data: userAuth } = await supabase.auth.getUser();
-        const email = userAuth?.user?.email || "";
-        const nama = userAuth?.user?.user_metadata?.nama || email.split("@")[0] || "User";
-        
-        const { data: newUser } = await supabase
-          .from("users")
-          .insert({ id: userId, email, nama, role: 'customer' })
-          .select()
-          .single();
-          
-        data = newUser;
-      }
-
-      setUserData(data);
-    } catch (e) {
-      // Jika gagal ambil data, tidak apa-apa — halaman tetap bisa tampil
-      console.warn("Could not fetch user profile from DB:", e);
+      if (id === requestId.current) setUserData(data as UserProfile | null);
+    } catch {
+      // RLS/database errors must not leave auth loading forever. The database
+      // policy migration provides the required access for authenticated users.
+      if (id === requestId.current) setUserData(null);
     } finally {
-      setLoading(false);
+      if (id === requestId.current) setLoading(false);
     }
   };
 
-  return (
-    <AuthContext.Provider value={{ session, user, userData, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  useEffect(() => {
+    const applySession = (nextSession: Session | null) => {
+      const id = ++requestId.current;
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (!nextSession?.user) {
+        setUserData(null);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      void fetchUserData(nextSession.user, id);
+    };
+
+    const loadInitialSession = async () => {
+      try {
+        const { data: { session: initialSession }, error } = await withTimeout(
+          supabase.auth.getSession(),
+          "Memeriksa sesi login"
+        );
+        if (error) throw error;
+        applySession(initialSession);
+      } catch {
+        applySession(null);
+      }
+    };
+
+    void loadInitialSession();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => applySession(nextSession));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return <AuthContext.Provider value={{ session, user, userData, loading }}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

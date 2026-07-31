@@ -1,19 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Star, BookOpen, Calendar, Users, FileText, ShoppingCart, BookMarked, ArrowLeft, Crown, Check } from "lucide-react";
+import { Star, Calendar, Users, FileText, ShoppingCart, BookMarked, ArrowLeft, Crown, Edit, Check } from "lucide-react";
 import AuthNavbar from "@/components/AuthNavbar";
 import { supabase } from "@/lib/supabase";
-import { books } from "@/lib/data/books";
 import { useAuth } from "@/lib/AuthContext";
 import { addToCart, isBookInCart, isBookOwned } from "@/lib/cartUtils";
 import styles from "./buku.module.css";
-
-// Simple toast state
-let globalToastFn: ((msg: string, type?: "success" | "error" | "info") => void) | null = null;
 
 function Toast({ message, type, visible }: { message: string; type: string; visible: boolean }) {
   const bgColor = type === "success" ? "#22c55e" : type === "error" ? "#ef4444" : "#3b82f6";
@@ -29,11 +24,36 @@ function Toast({ message, type, visible }: { message: string; type: string; visi
   );
 }
 
+type DbBook = {
+  id: string;
+  title: string;
+  author: string;
+  cover_url: string;
+  price: number;
+  old_price?: number;
+  rating: number;
+  review_count: number;
+  badge?: string;
+  genre: string;
+  pages: number;
+  publisher: string;
+  publish_year: number;
+  description: string;
+  is_premium: boolean;
+  cover?: string | null;
+  pdf_url?: string | null;
+  category?: string | null;
+  harga?: number | null;
+};
+
 export default function BookDetailPage() {
   const { session, userData } = useAuth();
   const params = useParams();
   const router = useRouter();
-  const book = books.find((b) => b.id === params.id);
+
+  const [book, setBook] = useState<DbBook | null>(null);
+  const [relatedBooks, setRelatedBooks] = useState<DbBook[]>([]);
+  const [loadingBook, setLoadingBook] = useState(true);
   const [loadingAction, setLoadingAction] = useState(false);
   const [isOwned, setIsOwned] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
@@ -45,10 +65,43 @@ export default function BookDetailPage() {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [myExistingReview, setMyExistingReview] = useState<any>(null);
 
-  const showToast = (msg: string, type: "success" | "error" | "info" | "warning" = "success") => {
+  const showToast = (msg: string, type: "success" | "error" | "info" = "success") => {
     setToast({ message: msg, type, visible: true });
     setTimeout(() => setToast(t => ({ ...t, visible: false })), 3000);
   };
+
+  // Fetch book from Supabase
+  useEffect(() => {
+    const fetchBook = async () => {
+      setLoadingBook(true);
+      const { data, error } = await supabase
+        .from("books")
+        .select("*")
+        .eq("id", params.id as string)
+        .single();
+
+      if (error || !data) {
+        setBook(null);
+        setLoadingBook(false);
+        return;
+      }
+      setBook(data);
+
+      // Fetch related books (same genre)
+      const { data: relData } = await supabase
+        .from("books")
+        .select("*")
+        .eq("genre", data.genre)
+        .eq("is_active", true)
+        .neq("id", data.id)
+        .limit(4);
+      setRelatedBooks(relData || []);
+
+      setLoadingBook(false);
+    };
+
+    fetchBook();
+  }, [params.id]);
 
   useEffect(() => {
     if (book) {
@@ -57,8 +110,8 @@ export default function BookDetailPage() {
     if (session && book) {
       checkStatus();
     }
-    
-    // Check for error in URL (redirected from reader)
+
+    // Check for error in URL
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("error") === "unauthorized") {
@@ -72,12 +125,11 @@ export default function BookDetailPage() {
     if (!book) return;
     const { data } = await supabase
       .from("reviews")
-      .select("id, rating, comment, created_at, user_id, users(nama, email)")
+      .select("id, rating, comment, created_at, user_id, users(nama, email, avatar_url)")
       .eq("book_id", book.id)
       .order("created_at", { ascending: false });
     if (data) {
       setReviews(data);
-      // Check if current user already reviewed
       if (session) {
         const mine = data.find((r: any) => r.user_id === session.user.id);
         if (mine) {
@@ -91,7 +143,6 @@ export default function BookDetailPage() {
 
   async function checkStatus() {
     if (!session || !book) return;
-
     const [owned, inCart] = await Promise.all([
       isBookOwned(session.user.id, book.id),
       isBookInCart(session.user.id, book.id)
@@ -108,7 +159,6 @@ export default function BookDetailPage() {
     setSubmittingReview(true);
     try {
       if (myExistingReview) {
-        // Update existing
         const { error } = await supabase
           .from("reviews")
           .update({ rating: myRating, comment: myComment })
@@ -116,7 +166,6 @@ export default function BookDetailPage() {
         if (error) throw error;
         showToast("Ulasan berhasil diperbarui!", "success");
       } else {
-        // Insert new
         const { error } = await supabase
           .from("reviews")
           .insert({ book_id: book?.id, user_id: session.user.id, rating: myRating, comment: myComment });
@@ -128,6 +177,55 @@ export default function BookDetailPage() {
       showToast(err.message || "Gagal mengirim ulasan.", "error");
     }
     setSubmittingReview(false);
+  }
+
+  const handleAddToCart = async () => {
+    if (!session) { router.push(`/login?redirect=/buku/${book?.id}`); return; }
+    if (isInCart) { router.push("/cart"); return; }
+    setLoadingAction(true);
+    const result = await addToCart(session.user.id, book!.id);
+    setLoadingAction(false);
+    if (result === "added") { setIsInCart(true); showToast("Buku berhasil ditambahkan ke keranjang!", "success"); }
+    else if (result === "exists") { setIsInCart(true); showToast("Buku sudah ada di keranjang.", "info"); }
+    else { showToast("Gagal menambahkan ke keranjang.", "error"); }
+  };
+
+  const handleBuyNow = () => {
+    if (!session) { router.push(`/login?redirect=/buku/${book?.id}`); return; }
+    router.push(`/checkout/direct/${book!.id}`);
+  };
+
+  const handleRead = () => {
+    if (!session) { router.push(`/login?redirect=/baca/${book?.id}`); return; }
+    let isSubscribed = false;
+    if (userData?.is_subscribed) {
+      if (!userData.subscription_expiry || new Date(userData.subscription_expiry) > new Date()) {
+        isSubscribed = true;
+      }
+    }
+    if (!isOwned && !isSubscribed) {
+      showToast("Anda harus berlangganan atau membeli buku ini untuk membaca.", "error");
+      return;
+    }
+    router.push(`/baca/${book!.id}`);
+  };
+
+  const coverUrl = book?.cover || book?.cover_url;
+  const category = book?.category || book?.genre;
+  const price = book?.harga ?? book?.price ?? 0;
+  const formatPrice = (amount: number) => amount === 0 ? "Gratis" : `Rp${amount.toLocaleString("id-ID")}`;
+
+  // Loading state
+  if (loadingBook) {
+    return (
+      <div className={styles.page}>
+        <AuthNavbar />
+        <div style={{ textAlign: "center", padding: "120px 0", color: "#9e8268" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>📚</div>
+          <p>Memuat detail buku...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!book) {
@@ -143,63 +241,6 @@ export default function BookDetailPage() {
       </div>
     );
   }
-
-  const related = books.filter((b) => b.genre === book.genre && b.id !== book.id).slice(0, 4);
-
-  const handleAddToCart = async () => {
-    if (!session) {
-      router.push(`/login?redirect=/buku/${book.id}`);
-      return;
-    }
-    if (isInCart) {
-      router.push("/cart");
-      return;
-    }
-    setLoadingAction(true);
-    const result = await addToCart(session.user.id, book.id);
-    setLoadingAction(false);
-    if (result === "added") {
-      setIsInCart(true);
-      showToast("Buku berhasil ditambahkan ke keranjang!", "success");
-    } else if (result === "exists") {
-      setIsInCart(true);
-      showToast("Buku sudah ada di keranjang.", "info");
-    } else if (result === "db_missing") {
-      showToast("Database belum disiapkan. Jalankan shopee_cart.sql di Supabase!", "error");
-    } else {
-      showToast("Gagal menambahkan. Cek konsol browser untuk detail error.", "error");
-    }
-  };
-
-  const handleBuyNow = () => {
-    if (!session) {
-      router.push(`/login?redirect=/buku/${book.id}`);
-      return;
-    }
-    router.push(`/checkout/direct/${book.id}`);
-  };
-
-  const handleRead = () => {
-    if (!session) {
-      router.push(`/login?redirect=/baca/${book.id}`);
-      return;
-    }
-    
-    // Check access before routing to reader
-    let isSubscribed = false;
-    if (userData?.is_subscribed) {
-      if (!userData.subscription_expiry || new Date(userData.subscription_expiry) > new Date()) {
-        isSubscribed = true;
-      }
-    }
-    
-    if (!isOwned && !isSubscribed) {
-      showToast("Anda harus berlangganan atau membeli buku ini untuk membaca.", "error");
-      return;
-    }
-
-    router.push(`/baca/${book.id}`);
-  };
 
   return (
     <div className={styles.page}>
@@ -222,19 +263,23 @@ export default function BookDetailPage() {
           <div className={styles.coverSection}>
             <div className={styles.coverWrap}>
               {book.badge && <span className={styles.badge}>{book.badge}</span>}
-              {book.isPremium && (
+              {book.is_premium && (
                 <span className={styles.premiumBadge}>
                   <Crown size={12} /> Premium
                 </span>
               )}
-              <Image
-                src={book.cover}
-                alt={book.title}
-                fill
-                sizes="(max-width:768px) 100vw, 340px"
-                style={{ objectFit: "cover" }}
-                priority
-              />
+              {coverUrl ? (
+                <Image
+                  src={coverUrl}
+                  alt={book.title}
+                  fill
+                  sizes="(max-width:768px) 100vw, 340px"
+                  style={{ objectFit: "cover" }}
+                  priority
+                />
+              ) : (
+                <div style={{ width: "100%", height: "100%", background: "#f0ece4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 80 }}>📖</div>
+              )}
             </div>
 
             {/* RATING BIG */}
@@ -244,13 +289,27 @@ export default function BookDetailPage() {
                 <strong>{book.rating}</strong>
                 <span>/ 5.0</span>
               </div>
-              <p>{book.reviewCount.toLocaleString("id-ID")} ulasan</p>
+              <p>{book.review_count.toLocaleString("id-ID")} ulasan</p>
             </div>
+
+            {userData?.role === 'admin' && (
+              <button
+                onClick={() => router.push(`/admin/buku?edit=${book.id}`)}
+                style={{
+                  width: "100%", marginTop: 12, padding: "12px", background: "#fef3c7",
+                  color: "#b45309", border: "1px dashed #f59e0b", borderRadius: 12,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  fontWeight: 700, cursor: "pointer", fontSize: 14
+                }}
+              >
+                <Edit size={16} /> Edit Buku (Admin)
+              </button>
+            )}
           </div>
 
           {/* RIGHT — Info */}
           <div className={styles.infoSection}>
-            <span className={styles.genreTag}>{book.genre}</span>
+            <span className={styles.genreTag}>{category}</span>
             <h1 className={styles.title}>{book.title}</h1>
             <p className={styles.author}>oleh <strong>{book.author}</strong></p>
 
@@ -262,15 +321,11 @@ export default function BookDetailPage() {
               </div>
               <div className={styles.stat}>
                 <Calendar size={16} />
-                <span>{book.year}</span>
+                <span>{book.publish_year}</span>
               </div>
               <div className={styles.stat}>
                 <Users size={16} />
                 <span>{book.publisher}</span>
-              </div>
-              <div className={styles.stat}>
-                <BookOpen size={16} />
-                <span>{book.chapters.length} bab</span>
               </div>
             </div>
 
@@ -282,10 +337,10 @@ export default function BookDetailPage() {
 
             {/* PRICE & CTA */}
             <div className={styles.priceSection}>
-              {book.oldPrice && (
-                <span className={styles.oldPrice}>{book.oldPrice}</span>
+              {book.old_price && (
+                <span className={styles.oldPrice}>{formatPrice(book.old_price)}</span>
               )}
-              <span className={styles.price}>{book.price}</span>
+              <span className={styles.price}>{formatPrice(price)}</span>
             </div>
 
             <div className={styles.ctaRow}>
@@ -299,7 +354,6 @@ export default function BookDetailPage() {
                     className={`${styles.buyBtn} ${isInCart ? styles.buyBtnInCart : ""}`}
                     disabled={loadingAction}
                     onClick={handleAddToCart}
-                    id={`btn-keranjang-${book.id}`}
                   >
                     <ShoppingCart size={18} />
                     {loadingAction ? "Memproses..." : isInCart ? "Lihat Keranjang" : "Tambah Keranjang"}
@@ -309,23 +363,18 @@ export default function BookDetailPage() {
                     style={{ backgroundColor: "#1e1e1e", color: "white", border: "1px solid #1e1e1e" }}
                     disabled={loadingAction}
                     onClick={handleBuyNow}
-                    id={`btn-beli-${book.id}`}
                   >
                     Beli Langsung
                   </button>
                 </>
               )}
-              <button
-                className={styles.readBtn}
-                onClick={handleRead}
-                id={`btn-baca-${book.id}`}
-              >
+              <button className={styles.readBtn} onClick={handleRead}>
                 <BookMarked size={18} />
                 Baca Sekarang
               </button>
             </div>
 
-            {book.isPremium && (
+            {book.is_premium && (
               <div className={styles.premiumNote}>
                 <Crown size={14} />
                 <span>Buku ini eksklusif untuk pelanggan Premium. <button onClick={() => router.push("/subscription")}>Mulai berlangganan</button></span>
@@ -334,39 +383,29 @@ export default function BookDetailPage() {
           </div>
         </div>
 
-        {/* CHAPTERS */}
-        <div className={styles.chapters}>
-          <h2>Daftar Bab</h2>
-          <div className={styles.chapterList}>
-            {book.chapters.map((ch, i) => (
-              <div key={i} className={styles.chapterItem}>
-                <span className={styles.chapterNum}>{i + 1}</span>
-                <span className={styles.chapterTitle}>{ch.title}</span>
-                <span className={styles.chapterLock}>🔒</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* RELATED BOOKS */}
-        {related.length > 0 && (
+        {relatedBooks.length > 0 && (
           <div className={styles.related}>
             <h2>Buku Serupa</h2>
             <div className={styles.relatedGrid}>
-              {related.map((b) => (
+              {relatedBooks.map((b) => (
                 <div
                   key={b.id}
                   className={styles.relatedCard}
                   onClick={() => router.push(`/buku/${b.id}`)}
                 >
                   <div className={styles.relatedCover}>
-                    <Image
-                      src={b.cover}
-                      alt={b.title}
-                      fill
-                      sizes="(max-width:768px) 50vw, 160px"
-                      style={{ objectFit: "cover" }}
-                    />
+                    {b.cover_url ? (
+                      <Image
+                        src={b.cover_url}
+                        alt={b.title}
+                        fill
+                        sizes="(max-width:768px) 50vw, 160px"
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div style={{ width: "100%", height: "100%", background: "#f0ece4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>📖</div>
+                    )}
                   </div>
                   <h3>{b.title}</h3>
                   <p>{b.author}</p>
@@ -386,14 +425,12 @@ export default function BookDetailPage() {
             ⭐ Ulasan Pembaca
           </h2>
 
-          {/* Write Review Form */}
           {session ? (
             <div style={{ background: "white", borderRadius: 16, padding: 28, border: "1px solid #ece5dd", marginBottom: 28 }}>
               <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "#2d1a08" }}>
                 {myExistingReview ? "Perbarui Ulasan Anda" : "Tulis Ulasan"}
               </h3>
               <form onSubmit={handleSubmitReview}>
-                {/* Star Rating Picker */}
                 <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
                   {[1,2,3,4,5].map((star) => (
                     <button
@@ -402,13 +439,12 @@ export default function BookDetailPage() {
                       onClick={() => setMyRating(star)}
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(0)}
-                      style={{ background: "none", border: "none", cursor: "pointer", padding: 2, transition: "transform 0.1s" }}
+                      style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}
                     >
                       <Star
                         size={32}
                         fill={(hoverRating || myRating) >= star ? "#FDBA12" : "none"}
                         color={(hoverRating || myRating) >= star ? "#FDBA12" : "#d1c4b0"}
-                        style={{ transition: "all 0.15s" }}
                       />
                     </button>
                   ))}
@@ -418,7 +454,6 @@ export default function BookDetailPage() {
                     </span>
                   )}
                 </div>
-
                 <textarea
                   value={myComment}
                   onChange={(e) => setMyComment(e.target.value)}
@@ -430,14 +465,13 @@ export default function BookDetailPage() {
                     fontFamily: "inherit", outline: "none", boxSizing: "border-box", marginBottom: 12
                   }}
                 />
-
                 <button
                   type="submit"
                   disabled={submittingReview}
                   style={{
                     background: "#7a5230", color: "white", border: "none", borderRadius: 10,
                     padding: "10px 24px", fontWeight: 700, fontSize: 14, cursor: "pointer",
-                    opacity: submittingReview ? 0.7 : 1, transition: "opacity 0.2s"
+                    opacity: submittingReview ? 0.7 : 1
                   }}
                 >
                   {submittingReview ? "Mengirim..." : myExistingReview ? "Perbarui Ulasan" : "Kirim Ulasan"}
@@ -454,7 +488,6 @@ export default function BookDetailPage() {
             </div>
           )}
 
-          {/* Reviews List */}
           {reviews.length === 0 ? (
             <div style={{ textAlign: "center", padding: "32px 0", color: "#9b8b7a" }}>
               <div style={{ fontSize: 40, marginBottom: 8 }}>📝</div>
@@ -466,11 +499,14 @@ export default function BookDetailPage() {
                 const displayName = review.users?.nama || review.users?.email?.split("@")[0] || "Anonim";
                 const initials = displayName.charAt(0).toUpperCase();
                 const dateStr = new Date(review.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+                const avatarUrl = review.users?.avatar_url;
                 return (
                   <div key={review.id} style={{ background: "white", borderRadius: 14, padding: 20, border: "1px solid #ece5dd" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#7a5230", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 700, fontSize: 16, flexShrink: 0 }}>
-                        {initials}
+                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#7a5230", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 700, fontSize: 16, flexShrink: 0, position: "relative", overflow: "hidden" }}>
+                        {avatarUrl ? (
+                          <Image src={avatarUrl} alt={displayName} fill style={{ objectFit: "cover" }} />
+                        ) : initials}
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 700, color: "#2d1a08", fontSize: 14 }}>{displayName}</div>

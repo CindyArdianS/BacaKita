@@ -30,6 +30,7 @@ export default function HomePage() {
 
   const featuredBooks = books.slice(0, 4);
   const bestSellers = books.filter((b) => b.badge === "Best Seller").slice(0, 4);
+  const heroBooks = books.slice(0, 3);
 
   return (
     <div className={styles.page}>
@@ -75,7 +76,7 @@ export default function HomePage() {
 
         <div className={styles.heroVisual}>
           <div className={styles.heroBooks}>
-            {[books[0], books[3], books[7]].map((book, i) => (
+            {heroBooks.map((book, i) => (
               <div
                 key={book.id}
                 className={styles.heroBookCard}

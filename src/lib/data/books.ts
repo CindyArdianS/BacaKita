@@ -1,8 +1,10 @@
+// Tipe ini tetap ada untuk kompatibilitas dengan file-file yang masih menggunakannya
 export type Book = {
   id: string;
   title: string;
   author: string;
   cover: string;
+  cover_url?: string;
   price: string;
   priceNum: number;
   oldPrice?: string;
