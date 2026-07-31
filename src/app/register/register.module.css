@@ -1,0 +1,295 @@
+.container{
+    display:flex;
+    width:100%;
+    height:100vh;
+    overflow:hidden;
+    background:#F8F5F2;
+}
+
+/* ================= LEFT ================= */
+
+.left{
+    width:55%;
+    position:relative;
+    overflow:hidden;
+    background:#000;
+}
+
+.video{
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    z-index:1;
+
+    transition:.4s;
+}
+
+.overlay{
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+
+    padding:70px;
+
+    background:linear-gradient(
+        rgba(0,0,0,.45),
+        rgba(0,0,0,.35)
+    );
+
+    color:white;
+
+    z-index:2;
+}
+
+.overlay h1{
+
+    font-size:68px;
+    margin-bottom:25px;
+
+}
+
+.overlay p{
+
+    font-size:23px;
+    line-height:1.8;
+
+}
+
+/* ================= RIGHT ================= */
+
+.right{
+
+    width:45%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#F8F5F2;
+
+}
+
+.card{
+
+    width:430px;
+
+    background:white;
+
+    border-radius:25px;
+
+    padding:45px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.12);
+
+}
+
+.card h2{
+
+    text-align:center;
+
+    color:#3A2E2A;
+
+    font-size:42px;
+
+    margin-bottom:35px;
+
+}
+
+.card label{
+
+    display:block;
+
+    margin-top:18px;
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+    color:#444;
+
+}
+
+.card input{
+
+    width:100%;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    border:1px solid #ddd;
+
+    font-size:15px;
+
+    color:#333;
+
+    box-sizing:border-box;
+
+}
+
+.card input::placeholder{
+
+    color:#999;
+
+}
+
+.card input:focus{
+
+    outline:none;
+
+    border-color:#B58B63;
+
+    box-shadow:0 0 0 3px rgba(181,139,99,.2);
+
+}
+
+.card button{
+
+    width:100%;
+
+    margin-top:30px;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#B58B63;
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.card button:hover{
+
+    background:#9A7654;
+
+}
+
+.card p{
+
+    text-align:center;
+
+    margin-top:25px;
+
+    color:#666;
+
+}
+
+.card span{
+
+    color:#B58B63;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+}
+
+@media(max-width:900px){
+
+.left{
+
+display:none;
+
+}
+
+.right{
+
+width:100%;
+
+}
+
+.card{
+
+width:90%;
+
+}
+
+}
+
+.passwordRules{
+    margin-top:12px;
+    margin-bottom:8px;
+}
+
+.passwordRules p{
+    margin:4px 0;
+    font-size:13px;
+    transition:.2s;
+}
+
+.valid{
+    color:#2E7D32;
+    font-weight:600;
+}
+
+.invalid{
+    color:#9E9E9E;
+}
+
+.error{
+    display:block;
+    color:#dc2626;
+    font-size:13px;
+    margin-top:6px;
+    margin-bottom:10px;
+    font-weight:500;
+}
+
+.inputError{
+    border:1px solid #dc2626 !important;
+}
+
+.inputError:focus{
+    box-shadow:0 0 0 3px rgba(220,38,38,.15);
+}
+
+.card .passwordInfo{
+    text-align:left;
+    margin-top:10px;
+    margin-bottom:20px;
+    font-size:13px;
+    line-height:1.7;
+    color:#666;
+}
+
+.card .passwordInfo b{
+    color:#B58B63;
+    font-weight:600;
+}
+
+.loginText{
+    text-align:center;
+    margin-top:25px;
+}
+
+.loginText span{
+    color:#B58B63;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.card button:disabled{
+    background:#bfbfbf;
+    cursor:not-allowed;
+}

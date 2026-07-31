@@ -1,0 +1,162 @@
+.container {
+  min-height: 100vh;
+  background: #f8f5f2;
+  padding: 50px 10%;
+  font-family: "Poppins", sans-serif;
+}
+
+.back {
+  border: none;
+  background: transparent;
+  color: #7a5230;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 25px;
+  font-size: 15px;
+}
+
+.container h1 {
+  color: #3a2e2a;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  display: flex;
+  gap: 25px;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+.card img {
+  width: 150px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+.card h2 {
+  color: #3a2e2a;
+  margin-bottom: 8px;
+}
+
+.card p {
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.card span {
+  background: #efe3d7;
+  color: #7a5230;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.priceBox {
+  background: white;
+  margin-top: 30px;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+.priceBox div {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+}
+
+.priceBox span {
+  color: #666;
+}
+
+.priceBox b {
+  color: #3a2e2a;
+}
+
+.priceBox hr {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+.total {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.total b {
+  color: #7a5230;
+}
+
+.container h3 {
+  margin-top: 35px;
+  margin-bottom: 18px;
+  color: #3a2e2a;
+}
+
+.methods {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 18px;
+}
+
+.methods button {
+  padding: 18px;
+  border-radius: 15px;
+  border: 2px solid #e6ddd3;
+  background: white;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: .3s;
+}
+
+.methods button:hover {
+  border-color: #7a5230;
+  background: #f4ede7;
+}
+
+.buy {
+  margin-top: 35px;
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 16px;
+  background: #7a5230;
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.buy:hover {
+  background: #5f3e22;
+  transform: translateY(-2px);
+}
+
+@media(max-width:768px){
+
+.container{
+padding:30px 20px;
+}
+
+.card{
+flex-direction:column;
+text-align:center;
+}
+
+.methods{
+grid-template-columns:1fr;
+}
+
+.card img{
+width:180px;
+height:260px;
+}
+
+}

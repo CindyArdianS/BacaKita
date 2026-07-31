@@ -1,0 +1,341 @@
+/* ============================================
+   CART PAGE — Shopee-style
+   ============================================ */
+
+.page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 120px;
+}
+
+.header {
+  background: white;
+  padding: 16px 0;
+  border-bottom: 1px solid #e8e8e8;
+  position: sticky;
+  top: 70px;
+  z-index: 10;
+}
+
+.headerInner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerInner h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.itemCount {
+  font-size: 14px;
+  color: #888;
+  font-weight: 400;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ---- Empty State ---- */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.emptyIllustration {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: floatEmpty 3s ease-in-out infinite;
+}
+
+@keyframes floatEmpty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.emptyState h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.emptyState p {
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 28px;
+}
+
+.exploreBtn {
+  background: #ee4d2d;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exploreBtn:hover {
+  background: #d43f21;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(238, 77, 45, 0.35);
+}
+
+/* ---- Loading Skeleton ---- */
+.skeleton {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.skeletonBox {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ---- Cart Item Card ---- */
+.cartItem {
+  background: white;
+  border-radius: 18px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  transition: all 0.25s ease;
+  animation: itemIn 0.3s ease;
+}
+
+@keyframes itemIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cartItem:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+/* Custom Shopee Checkbox */
+.customCheckbox {
+  display: none;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 30px;
+}
+
+.checkboxBox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  background: white;
+}
+
+.customCheckbox:checked + .checkboxLabel .checkboxBox {
+  background: #ee4d2d;
+  border-color: #ee4d2d;
+}
+
+.checkmark {
+  color: white;
+  font-size: 12px;
+  font-weight: 900;
+  display: none;
+}
+
+.customCheckbox:checked + .checkboxLabel .checkmark {
+  display: block;
+}
+
+.coverWrap {
+  position: relative;
+  width: 72px;
+  height: 108px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.itemInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemAuthor {
+  font-size: 13px;
+  color: #888;
+  margin: 0 0 10px;
+}
+
+.itemPrice {
+  font-size: 17px;
+  font-weight: 800;
+  color: #ee4d2d;
+  margin: 0;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #bbb;
+  padding: 6px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* ---- Sticky Bottom Footer ---- */
+.stickyFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #e8e8e8;
+  padding: 12px 16px;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+}
+
+.footerInner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.selectAllLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  flex-shrink: 0;
+}
+
+.footerTotal {
+  flex: 1;
+  text-align: right;
+}
+
+.totalLabel {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.totalPrice {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ee4d2d;
+}
+
+.totalBooks {
+  font-size: 12px;
+  color: #888;
+}
+
+.checkoutBtn {
+  background: #ee4d2d;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.checkoutBtn:hover:not(:disabled) {
+  background: #d43f21;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(238, 77, 45, 0.35);
+}
+
+.checkoutBtn:disabled {
+  background: #e0e0e0;
+  color: #bbb;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .footerInner {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .selectAllLabel {
+    font-size: 13px;
+  }
+
+  .totalPrice {
+    font-size: 17px;
+  }
+
+  .checkoutBtn {
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+  }
+}

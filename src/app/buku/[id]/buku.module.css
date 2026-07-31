@@ -1,0 +1,607 @@
+/* ============================
+   BOOK DETAIL PAGE
+============================= */
+
+.page {
+  min-height: 100vh;
+  background: #f7f2ed;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 40px 60px;
+}
+
+/* ============================
+   NOT FOUND
+============================= */
+
+.notFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px;
+  text-align: center;
+}
+
+.notFound span {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.notFound h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a1108;
+  margin-bottom: 8px;
+}
+
+.notFound p {
+  font-size: 15px;
+  color: #9e8268;
+  margin-bottom: 24px;
+}
+
+.notFound button {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  background: #7a5230;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  transition: background 0.2s;
+}
+
+.notFound button:hover {
+  background: #5f3d21;
+}
+
+/* ============================
+   BREADCRUMB
+============================= */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.breadcrumb button {
+  background: none;
+  border: none;
+  color: #9e8268;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.breadcrumb button:hover {
+  color: #7a5230;
+}
+
+.breadcrumb span {
+  color: #c5aa92;
+  font-size: 13px;
+}
+
+.breadcrumb span:last-child {
+  color: #1a1108;
+  font-weight: 600;
+}
+
+/* ============================
+   MAIN DETAIL
+============================= */
+
+.detail {
+  display: flex;
+  gap: 48px;
+  background: white;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  margin-bottom: 28px;
+}
+
+/* ============================
+   COVER SECTION
+============================= */
+
+.coverSection {
+  flex-shrink: 0;
+  width: 280px;
+}
+
+.coverWrap {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
+}
+
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 5px 12px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #7a5230, #9e6a3e);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.premiumBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #1a1108, #3d2609);
+  color: #fbbf24;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ratingBox {
+  background: #f6f2ee;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+
+.ratingScore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.ratingScore strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1108;
+}
+
+.ratingScore span {
+  font-size: 14px;
+  color: #9e8268;
+}
+
+.ratingBox p {
+  font-size: 12px;
+  color: #9e8268;
+}
+
+/* ============================
+   INFO SECTION
+============================= */
+
+.infoSection {
+  flex: 1;
+  min-width: 0;
+}
+
+.genreTag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: rgba(122,82,48,0.08);
+  color: #7a5230;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.title {
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 800;
+  color: #1a1108;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.author {
+  font-size: 15px;
+  color: #9e8268;
+  margin-bottom: 20px;
+}
+
+.author strong {
+  color: #5f3d21;
+}
+
+/* ============================
+   STATS ROW
+============================= */
+
+.statsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #f6f2ee;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #6b5744;
+  font-weight: 500;
+}
+
+.stat svg {
+  color: #7a5230;
+}
+
+/* ============================
+   DESCRIPTION
+============================= */
+
+.desc {
+  margin-bottom: 28px;
+}
+
+.desc h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1108;
+  margin-bottom: 10px;
+}
+
+.desc p {
+  font-size: 14px;
+  color: #6b5744;
+  line-height: 1.75;
+}
+
+/* ============================
+   PRICE & CTA
+============================= */
+
+.priceSection {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.oldPrice {
+  font-size: 14px;
+  color: #c5aa92;
+  text-decoration: line-through;
+}
+
+.price {
+  font-size: 28px;
+  font-weight: 800;
+  color: #7a5230;
+  letter-spacing: -0.5px;
+}
+
+.ctaRow {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.buyBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7a5230, #9e6a3e);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(122,82,48,0.3);
+}
+
+.buyBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(122,82,48,0.4);
+}
+
+.readBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border: 2px solid #7a5230;
+  border-radius: 14px;
+  background: transparent;
+  color: #7a5230;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.2s;
+}
+
+.readBtn:hover {
+  background: #7a5230;
+  color: white;
+}
+
+.premiumNote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 12px;
+  font-size: 13px;
+  color: #6b5744;
+}
+
+.premiumNote svg {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+.premiumNote button {
+  background: none;
+  border: none;
+  color: #7a5230;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  padding: 0;
+  text-decoration: underline;
+}
+
+/* ============================
+   CHAPTERS
+============================= */
+
+.chapters {
+  background: white;
+  border-radius: 24px;
+  padding: 32px 40px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  margin-bottom: 28px;
+}
+
+.chapters h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a1108;
+  margin-bottom: 20px;
+}
+
+.chapterList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chapterItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #f6f2ee;
+  transition: background 0.18s;
+}
+
+.chapterItem:hover {
+  background: #ece5dd;
+}
+
+.chapterNum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #7a5230;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.chapterTitle {
+  flex: 1;
+  font-size: 14px;
+  color: #2d1a08;
+  font-weight: 500;
+}
+
+.chapterLock {
+  font-size: 14px;
+  opacity: 0.5;
+}
+
+/* ============================
+   RELATED BOOKS
+============================= */
+
+.related {
+  background: white;
+  border-radius: 24px;
+  padding: 32px 40px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  margin-bottom: 28px;
+}
+
+.related h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a1108;
+  margin-bottom: 20px;
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.relatedCard {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.relatedCard:hover {
+  transform: translateY(-4px);
+}
+
+.relatedCover {
+  position: relative;
+  height: 160px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.relatedCard h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1108;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.relatedCard p {
+  font-size: 12px;
+  color: #9e8268;
+  margin-bottom: 5px;
+}
+
+.relatedCard span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #7a5230;
+}
+
+/* ============================
+   BACK BUTTON
+============================= */
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border: 1.5px solid #ece5dd;
+  border-radius: 12px;
+  background: white;
+  color: #6b5744;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.2s;
+}
+
+.backBtn:hover {
+  border-color: #7a5230;
+  color: #7a5230;
+}
+
+/* ============================
+   RESPONSIVE
+============================= */
+
+@media (max-width: 900px) {
+  .container {
+    padding: 24px 24px 48px;
+  }
+  .detail {
+    flex-direction: column;
+    gap: 28px;
+    padding: 28px;
+  }
+  .coverSection {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .coverWrap {
+    width: 180px;
+    height: 240px;
+    flex-shrink: 0;
+  }
+  .ratingBox {
+    flex: 1;
+  }
+  .relatedGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 20px 16px 40px;
+  }
+  .detail {
+    padding: 20px;
+  }
+  .coverSection {
+    flex-direction: column;
+    align-items: center;
+  }
+  .coverWrap {
+    width: 100%;
+    max-width: 280px;
+    height: 340px;
+  }
+  .ctaRow {
+    flex-direction: column;
+  }
+  .buyBtn, .readBtn {
+    width: 100%;
+    justify-content: center;
+  }
+  .chapters {
+    padding: 24px 20px;
+  }
+  .related {
+    padding: 24px 20px;
+  }
+  .relatedGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

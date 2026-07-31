@@ -1,0 +1,694 @@
+/* ============================
+   HOME PAGE
+============================= */
+
+.page {
+  min-height: 100vh;
+  background: #f7f2ed;
+}
+
+/* ============================
+   HERO SECTION
+============================= */
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 80px 80px 60px;
+  min-height: 560px;
+  background: linear-gradient(135deg, #fff8f4 0%, #f7f2ed 60%, #fdebd0 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  right: -120px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(122,82,48,0.06) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.heroContent {
+  flex: 1;
+  max-width: 540px;
+  z-index: 1;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(122,82,48,0.08);
+  color: #7a5230;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 0.3px;
+}
+
+.heroTitle {
+  font-size: clamp(36px, 5vw, 58px);
+  font-weight: 800;
+  color: #1a1108;
+  line-height: 1.15;
+  margin-bottom: 18px;
+  letter-spacing: -1.5px;
+}
+
+.heroAccent {
+  background: linear-gradient(135deg, #7a5230, #c97d3e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroDesc {
+  font-size: 17px;
+  color: #6b5744;
+  line-height: 1.65;
+  margin-bottom: 32px;
+  max-width: 420px;
+}
+
+.heroSearch {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: white;
+  border-radius: 16px;
+  border: 2px solid #ece5dd;
+  box-shadow: 0 4px 24px rgba(122,82,48,0.08);
+  padding: 6px 6px 6px 16px;
+  margin-bottom: 24px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.heroSearch:focus-within {
+  border-color: #7a5230;
+  box-shadow: 0 4px 24px rgba(122,82,48,0.14);
+}
+
+.searchIcon {
+  color: #a88262;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.heroSearch input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #2d1a08;
+  font-family: "Poppins", sans-serif;
+}
+
+.heroSearch input::placeholder {
+  color: #bba98c;
+}
+
+.heroSearch button {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 12px;
+  background: #7a5230;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  font-family: "Poppins", sans-serif;
+  white-space: nowrap;
+}
+
+.heroSearch button:hover {
+  background: #5f3d21;
+  transform: scale(1.02);
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.heroCta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7a5230, #9e6a3e);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Poppins", sans-serif;
+  box-shadow: 0 4px 20px rgba(122,82,48,0.3);
+}
+
+.heroCta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(122,82,48,0.4);
+}
+
+.heroSecondary {
+  padding: 13px 28px;
+  border: 2px solid #7a5230;
+  border-radius: 14px;
+  background: transparent;
+  color: #7a5230;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Poppins", sans-serif;
+}
+
+.heroSecondary:hover {
+  background: #7a5230;
+  color: white;
+}
+
+/* ============================
+   HERO VISUAL
+============================= */
+
+.heroVisual {
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.heroBooks {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.heroBookCard {
+  position: relative;
+  width: 120px;
+  height: 170px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  cursor: pointer;
+  transition: transform 0.25s;
+  flex-shrink: 0;
+}
+
+.heroBookCard:hover {
+  transform: translateY(-8px) scale(1.03);
+}
+
+/* ============================
+   STATS
+============================= */
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  padding: 0 80px;
+  margin-bottom: 16px;
+}
+
+.statItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 20px;
+  background: white;
+  text-align: center;
+  border-right: 1px solid #ece5dd;
+  transition: background 0.2s;
+}
+
+.statItem:first-child {
+  border-radius: 20px 0 0 20px;
+}
+
+.statItem:last-child {
+  border-right: none;
+  border-radius: 0 20px 20px 0;
+}
+
+.statItem:hover {
+  background: #fff8f4;
+}
+
+.statIcon {
+  color: #7a5230;
+}
+
+.statItem strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: #2d1a08;
+  letter-spacing: -0.5px;
+}
+
+.statItem span {
+  font-size: 13px;
+  color: #9e8268;
+  font-weight: 500;
+}
+
+/* ============================
+   BOOK SECTIONS
+============================= */
+
+.section {
+  padding: 40px 80px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.sectionHeader h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a1108;
+  letter-spacing: -0.5px;
+}
+
+.sectionHeader p {
+  font-size: 14px;
+  color: #9e8268;
+  margin-top: 4px;
+}
+
+.seeAll {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: 1.5px solid #e0d5cb;
+  border-radius: 10px;
+  background: white;
+  color: #7a5230;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Poppins", sans-serif;
+  white-space: nowrap;
+}
+
+.seeAll:hover {
+  background: #7a5230;
+  color: white;
+  border-color: #7a5230;
+}
+
+.bookGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.bookCard {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.22s, box-shadow 0.22s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.bookCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+}
+
+.bookCoverWrap {
+  position: relative;
+  height: 230px;
+  overflow: hidden;
+}
+
+.bookBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #7a5230, #9e6a3e);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.bookInfo {
+  padding: 14px 16px 18px;
+}
+
+.bookInfo h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1108;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bookInfo p {
+  font-size: 12px;
+  color: #9e8268;
+  margin-bottom: 8px;
+}
+
+.bookMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #7a5230;
+}
+
+.genre {
+  font-size: 11px;
+  color: #b0927a;
+  background: #f6f2ee;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.bookInfo strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: #7a5230;
+}
+
+/* ============================
+   PREMIUM CTA
+============================= */
+
+.premiumCta {
+  margin: 20px 80px 40px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #2d1a08 0%, #7a5230 50%, #c97d3e 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+.premiumCta::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 300px;
+  height: 300px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.premiumCtaContent {
+  padding: 56px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.premiumIcon {
+  color: #fbbf24;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 12px rgba(251,191,36,0.5));
+}
+
+.premiumCtaContent h2 {
+  font-size: 30px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.premiumCtaContent p {
+  font-size: 16px;
+  color: rgba(255,255,255,0.8);
+  max-width: 480px;
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+
+.premiumBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 36px;
+  border: none;
+  border-radius: 14px;
+  background: white;
+  color: #7a5230;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Poppins", sans-serif;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.premiumBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+/* ============================
+   FOOTER
+============================= */
+
+.footer {
+  background: #1a1108;
+  margin-top: 20px;
+}
+
+.footerTop {
+  display: flex;
+  gap: 60px;
+  padding: 48px 80px;
+}
+
+.footerBrand {
+  flex: 1;
+}
+
+.footerBrand h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.footerBrand p {
+  font-size: 14px;
+  color: #9e8268;
+  line-height: 1.7;
+  max-width: 280px;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 60px;
+}
+
+.footerLinks div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footerLinks h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #c8aa8e;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.footerLinks button {
+  background: none;
+  border: none;
+  color: #806252;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Poppins", sans-serif;
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.footerLinks button:hover {
+  color: white;
+}
+
+.footerBottom {
+  border-top: 1px solid #2d1f14;
+  padding: 20px 80px;
+}
+
+.footerBottom p {
+  font-size: 13px;
+  color: #5a4232;
+  text-align: center;
+}
+
+/* ============================
+   RESPONSIVE
+============================= */
+
+@media (max-width: 1024px) {
+  .hero {
+    padding: 60px 40px;
+    gap: 32px;
+  }
+  .stats {
+    padding: 0 40px;
+  }
+  .section {
+    padding: 32px 40px;
+  }
+  .premiumCta {
+    margin: 20px 40px 32px;
+  }
+  .footerTop {
+    padding: 40px 40px;
+    gap: 40px;
+  }
+  .footerBottom {
+    padding: 20px 40px;
+  }
+  .bookGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    padding: 40px 20px 32px;
+    gap: 28px;
+    text-align: center;
+  }
+  .heroContent {
+    max-width: 100%;
+  }
+  .heroDesc {
+    max-width: 100%;
+  }
+  .heroSearch {
+    text-align: left;
+  }
+  .heroActions {
+    justify-content: center;
+  }
+  .heroVisual {
+    display: none;
+  }
+  .stats {
+    padding: 0 20px;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+  .statItem {
+    flex: calc(50% - 1px);
+    border-right: 1px solid #ece5dd;
+    border-radius: 0 !important;
+  }
+  .statItem:first-child {
+    border-radius: 20px 0 0 0 !important;
+  }
+  .statItem:nth-child(2) {
+    border-right: none;
+    border-radius: 0 20px 0 0 !important;
+  }
+  .statItem:nth-child(3) {
+    border-radius: 0 0 0 20px !important;
+  }
+  .statItem:last-child {
+    border-right: none;
+    border-radius: 0 0 20px 0 !important;
+  }
+  .section {
+    padding: 28px 20px;
+  }
+  .bookGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .premiumCta {
+    margin: 16px 20px 24px;
+    border-radius: 18px;
+  }
+  .premiumCtaContent {
+    padding: 40px 24px;
+  }
+  .premiumCtaContent h2 {
+    font-size: 22px;
+  }
+  .footerTop {
+    flex-direction: column;
+    padding: 36px 20px;
+    gap: 28px;
+  }
+  .footerLinks {
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .footerBottom {
+    padding: 16px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 30px;
+  }
+  .bookGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .bookCoverWrap {
+    height: 160px;
+  }
+}

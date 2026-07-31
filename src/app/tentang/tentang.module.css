@@ -1,0 +1,450 @@
+/* ============================
+   TENTANG PAGE
+============================= */
+
+.page {
+  min-height: 100vh;
+  background: #f7f2ed;
+}
+
+/* ============================
+   HERO
+============================= */
+
+.hero {
+  background: linear-gradient(135deg, #2d1a08 0%, #7a5230 60%, #c97d3e 100%);
+  padding: 80px 80px 72px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 400px;
+  height: 400px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.heroContent {
+  max-width: 640px;
+  position: relative;
+  z-index: 1;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.9);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.hero h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 800;
+  color: white;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+  line-height: 1.15;
+}
+
+.accent {
+  color: #fbbf24;
+}
+
+.hero p {
+  font-size: 17px;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+/* ============================
+   SECTION
+============================= */
+
+.section {
+  padding: 60px 80px;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.sectionTitle h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1108;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.sectionTitle p {
+  font-size: 15px;
+  color: #9e8268;
+}
+
+/* ============================
+   MISI VISI CARDS
+============================= */
+
+.misiVisi {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  transition: transform 0.22s, box-shadow 0.22s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+}
+
+.cardIcon {
+  font-size: 36px;
+  margin-bottom: 16px;
+}
+
+.card h2 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a1108;
+  margin-bottom: 12px;
+}
+
+.card p {
+  font-size: 14px;
+  color: #6b5744;
+  line-height: 1.75;
+}
+
+/* ============================
+   STATS
+============================= */
+
+.statsSection {
+  background: linear-gradient(135deg, #fff8f4, #fdebd0);
+  border-top: 1px solid #ece5dd;
+  border-bottom: 1px solid #ece5dd;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 48px 80px;
+  gap: 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+  border-right: 1px solid #ece5dd;
+}
+
+.stat:last-child {
+  border-right: none;
+}
+
+.statIcon {
+  color: #7a5230;
+}
+
+.stat strong {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a1108;
+  letter-spacing: -0.5px;
+}
+
+.stat span {
+  font-size: 14px;
+  color: #9e8268;
+  font-weight: 500;
+}
+
+/* ============================
+   STORY
+============================= */
+
+.story {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.storyLabel {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: rgba(122,82,48,0.08);
+  color: #7a5230;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.storyContent h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1a1108;
+  letter-spacing: -0.5px;
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+
+.storyContent p {
+  font-size: 15px;
+  color: #6b5744;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.storyVisual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.storyCard {
+  background: white;
+  border-radius: 16px;
+  padding: 22px 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.storyCard:hover {
+  transform: translateY(-3px);
+}
+
+.storyCard span {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.storyCard h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1108;
+  margin-bottom: 6px;
+}
+
+.storyCard p {
+  font-size: 12px;
+  color: #9e8268;
+  line-height: 1.6;
+}
+
+/* ============================
+   TEAM
+============================= */
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.teamCard {
+  background: white;
+  border-radius: 18px;
+  padding: 28px 20px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  transition: transform 0.22s, box-shadow 0.22s;
+}
+
+.teamCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+}
+
+.teamAvatar {
+  font-size: 48px;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+
+.teamCard h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1108;
+  margin-bottom: 5px;
+}
+
+.teamCard p {
+  font-size: 13px;
+  color: #9e8268;
+}
+
+/* ============================
+   KONTAK
+============================= */
+
+.kontakSection {
+  background: #1a1108;
+  padding: 60px 80px;
+}
+
+.kontakSection .sectionTitle h2 {
+  color: white;
+}
+
+.kontakSection .sectionTitle p {
+  color: #9e8268;
+}
+
+.kontakGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.kontakCard {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 28px 24px;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+.kontakCard:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.kontakIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(122,82,48,0.3);
+  color: #c97d3e;
+  margin: 0 auto 16px;
+}
+
+.kontakCard h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.kontakCard p {
+  font-size: 15px;
+  color: #c8aa8e;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.kontakCard span {
+  font-size: 12px;
+  color: #806252;
+}
+
+/* ============================
+   RESPONSIVE
+============================= */
+
+@media (max-width: 1024px) {
+  .hero {
+    padding: 60px 40px;
+  }
+  .section {
+    padding: 48px 40px;
+  }
+  .statsGrid {
+    padding: 40px 40px;
+  }
+  .kontakSection {
+    padding: 48px 40px;
+  }
+  .misiVisi {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .story {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .teamGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 48px 20px;
+  }
+  .section {
+    padding: 40px 20px;
+  }
+  .statsGrid {
+    padding: 32px 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+  }
+  .stat {
+    border-right: 1px solid #ece5dd;
+    border-bottom: 1px solid #ece5dd;
+  }
+  .stat:nth-child(2), .stat:last-child {
+    border-right: none;
+  }
+  .stat:nth-child(3), .stat:last-child {
+    border-bottom: none;
+  }
+  .kontakSection {
+    padding: 40px 20px;
+  }
+  .kontakGrid {
+    grid-template-columns: 1fr;
+  }
+  .storyVisual {
+    grid-template-columns: 1fr 1fr;
+  }
+  .teamGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 28px;
+  }
+  .storyVisual {
+    grid-template-columns: 1fr;
+  }
+  .teamGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
