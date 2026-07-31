@@ -6,6 +6,7 @@ import { CheckCircle2, Loader2, ArrowRight, CreditCard, Wallet, AlertCircle } fr
 import Image from "next/image";
 import { useAuth } from "@/lib/AuthContext";
 import AuthNavbar from "@/components/AuthNavbar";
+import { supabase } from "@/lib/supabase";
 
 export default function CheckoutDirectPage() {
   const { session, loading: authLoading } = useAuth();
