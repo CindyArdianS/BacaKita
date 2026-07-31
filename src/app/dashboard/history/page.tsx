@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { History as HistoryIcon, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { books } from "@/lib/data/books";
 import styles from "../dashboard.module.css";
 
 type OrderItem = {
@@ -27,6 +26,7 @@ export default function HistoryPage() {
   const router = useRouter();
 
   const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersMap, setOrdersMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"transaksi" | "baca">("transaksi");
   const [readHistory, setReadHistory] = useState<any[]>([]);
@@ -50,7 +50,22 @@ export default function HistoryPage() {
       .eq("user_id", session?.user.id)
       .order("created_at", { ascending: false });
 
-    if (!error && data) setOrders(data as Order[]);
+    if (!error && data) {
+      const fetchedOrders = data as Order[];
+      setOrders(fetchedOrders);
+
+      const allBookIds = Array.from(new Set(fetchedOrders.flatMap(o => (o.order_items || []).map(oi => oi.book_id))));
+      if (allBookIds.length > 0) {
+        const { data: dbBooks } = await supabase
+          .from("books")
+          .select("id, title")
+          .in("id", allBookIds);
+
+        const titles: Record<string, string> = {};
+        (dbBooks || []).forEach(b => { titles[b.id] = b.title; });
+        setOrdersMap(titles);
+      }
+    }
     setLoading(false);
   }
 
@@ -62,11 +77,29 @@ export default function HistoryPage() {
       .lt("progress_percentage", 100)
       .order("updated_at", { ascending: false });
 
+    const bookIds = (progresses || []).map(p => p.book_id);
+    let dbBooksMap = new Map<string, any>();
+    if (bookIds.length > 0) {
+      const { data: dbBooks } = await supabase
+        .from("books")
+        .select("*")
+        .in("id", bookIds);
+      (dbBooks || []).forEach(b => dbBooksMap.set(b.id, b));
+    }
+
     const enriched = (progresses || [])
       .map(p => {
-        const book = books.find(b => b.id === p.book_id);
+        const book = dbBooksMap.get(p.book_id);
         if (!book) return null;
-        return { ...book, lastChapter: p.last_chapter ?? 0, progressPercentage: p.progress_percentage ?? 0, updatedAt: p.updated_at };
+        return {
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          cover: book.cover || book.cover_url || "",
+          lastChapter: p.last_chapter ?? 0,
+          progressPercentage: p.progress_percentage ?? 0,
+          updatedAt: p.updated_at
+        };
       })
       .filter(Boolean);
     setReadHistory(enriched);
@@ -127,8 +160,7 @@ export default function HistoryPage() {
               {orders.map(order => {
                 const sc = statusConfig[order.status] || statusConfig.pending;
                 const bookTitles = (order.order_items || []).map(oi => {
-                  const b = books.find(bk => bk.id === oi.book_id);
-                  return b?.title || oi.book_id;
+                  return ordersMap[oi.book_id] || "Buku #" + oi.book_id.slice(0, 6);
                 });
 
                 return (

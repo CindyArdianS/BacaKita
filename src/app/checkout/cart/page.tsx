@@ -6,7 +6,6 @@ import { CheckCircle2, Loader2, ArrowRight, CreditCard, Wallet, AlertCircle } fr
 import { useAuth } from "@/lib/AuthContext";
 import { supabase } from "@/lib/supabase";
 import AuthNavbar from "@/components/AuthNavbar";
-import { books } from "@/lib/data/books";
 
 type CheckoutItem = {
   cart_item_id: string;
@@ -58,9 +57,17 @@ function CheckoutCartContent() {
       return;
     }
 
+    const bookIds = cartItems.map(ci => ci.book_id);
+    const { data: dbBooks } = await supabase
+      .from("books")
+      .select("*")
+      .in("id", bookIds);
+
+    const dbBooksMap = new Map((dbBooks || []).map(b => [b.id, b]));
+
     const items: CheckoutItem[] = cartItems.map(ci => {
-      const book = books.find(b => b.id === ci.book_id);
-      const price = book?.price ? parseInt(book.price.replace(/[^0-9]/g, ""), 10) : 0;
+      const book = dbBooksMap.get(ci.book_id);
+      const price = book?.harga ?? book?.price ?? 0;
       return {
         cart_item_id: ci.id,
         book_id: ci.book_id,

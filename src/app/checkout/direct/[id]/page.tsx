@@ -5,9 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, ArrowRight, CreditCard, Wallet, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/lib/AuthContext";
-import { supabase } from "@/lib/supabase";
 import AuthNavbar from "@/components/AuthNavbar";
-import { books } from "@/lib/data/books";
 
 export default function CheckoutDirectPage() {
   const { session, loading: authLoading } = useAuth();
@@ -45,9 +43,19 @@ export default function CheckoutDirectPage() {
       return;
     }
 
-    const book = books.find(b => b.id === bookId);
+    const { data: book } = await supabase
+      .from("books")
+      .select("*")
+      .eq("id", bookId)
+      .maybeSingle();
+
     if (book) {
-      setBookDetails(book);
+      const numPrice = book.harga ?? book.price ?? 0;
+      setBookDetails({
+        ...book,
+        cover: book.cover || book.cover_url || "",
+        price: numPrice === 0 ? "Gratis" : `Rp${numPrice.toLocaleString("id-ID")}`,
+      });
     } else {
       setStatus("error");
       setErrorMessage("Buku tidak ditemukan.");

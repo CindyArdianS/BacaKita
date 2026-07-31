@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { books } from "@/lib/data/books";
 import AuthNavbar from "@/components/AuthNavbar";
 import styles from "./cart.module.css";
 
@@ -79,10 +78,31 @@ export default function CartPage() {
 
     if (error) { console.error(error); setLoading(false); return; }
 
+    const bookIds = (items || []).map(item => item.book_id);
+    let booksMap: Record<string, any> = {};
+
+    if (bookIds.length > 0) {
+      const { data: dbBooks } = await supabase
+        .from("books")
+        .select("*")
+        .in("id", bookIds);
+
+      (dbBooks || []).forEach(b => {
+        const numPrice = b.harga ?? b.price ?? 0;
+        booksMap[b.id] = {
+          id: b.id,
+          title: b.title,
+          author: b.author,
+          price: numPrice === 0 ? "Gratis" : `Rp${numPrice.toLocaleString("id-ID")}`,
+          cover: b.cover || b.cover_url || "",
+        };
+      });
+    }
+
     const enriched: CartItem[] = (items || []).map(item => ({
       ...item,
       selected: true,
-      bookDetails: books.find(b => b.id === item.book_id) as any
+      bookDetails: booksMap[item.book_id]
     }));
     setCartItems(enriched);
     setLoading(false);

@@ -6,10 +6,25 @@ import Image from "next/image";
 import { BookOpen, ShoppingBag, CheckCircle2, RefreshCw } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { books, Book } from "@/lib/data/books";
 import styles from "../dashboard.module.css";
 
-type OwnedBook = Book & {
+type OwnedBook = {
+  id: string;
+  title: string;
+  author: string;
+  cover: string;
+  cover_url?: string;
+  price: string;
+  priceNum: number;
+  rating: number;
+  reviewCount: number;
+  badge?: string;
+  genre: string;
+  pages: number;
+  publisher: string;
+  year: number;
+  description: string;
+  chapters: { title: string }[];
   purchasedAt: string;
   progressPercentage: number;
   lastChapter: number;
@@ -83,12 +98,38 @@ export default function BukuSayaPage() {
       };
     });
 
+    let dbBooksMap = new Map<string, any>();
+    if (bookIds.length > 0) {
+      const { data: dbBooks } = await supabase
+        .from("books")
+        .select("*")
+        .in("id", bookIds);
+
+      (dbBooks || []).forEach((b) => dbBooksMap.set(b.id, b));
+    }
+
     const enriched: OwnedBook[] = allItems
       .map((o) => {
-        const bookDetail = books.find((b) => b.id === o.book_id);
-        if (!bookDetail) return null;
+        const b = dbBooksMap.get(o.book_id);
+        if (!b) return null;
+        const numPrice = b.harga ?? b.price ?? 0;
         return {
-          ...bookDetail,
+          id: b.id,
+          title: b.title,
+          author: b.author,
+          cover: b.cover || b.cover_url || "",
+          cover_url: b.cover_url || b.cover || "",
+          price: numPrice === 0 ? "Gratis" : `Rp${numPrice.toLocaleString("id-ID")}`,
+          priceNum: numPrice,
+          rating: b.rating ?? 0,
+          reviewCount: b.review_count ?? 0,
+          badge: b.badge,
+          genre: b.category || b.genre || "Lainnya",
+          pages: b.pages ?? 0,
+          publisher: b.publisher || "-",
+          year: b.publish_year ?? 2024,
+          description: b.description || "",
+          chapters: [],
           purchasedAt: o.purchased_at,
           lastChapter: progressMap[o.book_id]?.lastChapter ?? 0,
           progressPercentage: progressMap[o.book_id]?.progressPercentage ?? 0,

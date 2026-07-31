@@ -6,18 +6,71 @@ import { useAuth } from "@/lib/AuthContext";
 import Image from "next/image";
 import { ArrowRight, Star, Crown, BookOpen, Users, Award, Search } from "lucide-react";
 import PublicNavbar from "@/components/PublicNavbar";
-import { books } from "@/lib/data/books";
+import { supabase } from "@/lib/supabase";
 import styles from "./home.module.css";
+
+type DbBook = {
+  id: string;
+  title: string;
+  author: string;
+  cover_url?: string;
+  cover?: string | null;
+  price?: number | null;
+  harga?: number | null;
+  rating?: number | null;
+  badge?: string | null;
+  genre?: string | null;
+  category?: string | null;
+  created_at: string;
+};
 
 export default function HomePage() {
   const { session, loading: authLoading } = useAuth();
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [dbBooks, setDbBooks] = useState<any[]>([]);
+  const [loadingBooks, setLoadingBooks] = useState(true);
+
   useEffect(() => {
     if (!authLoading && session) {
       router.push("/dashboard");
     }
   }, [session, authLoading, router]);
+
+  useEffect(() => {
+    async function fetchPublicBooks() {
+      setLoadingBooks(true);
+      try {
+        const { data, error } = await supabase
+          .from("books")
+          .select("*")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false });
+
+        if (!error && data) {
+          const normalized = data.map((b: DbBook) => {
+            const numPrice = b.harga ?? b.price ?? 0;
+            return {
+              id: b.id,
+              title: b.title,
+              author: b.author,
+              cover: b.cover || b.cover_url || "",
+              badge: b.badge || undefined,
+              genre: b.category || b.genre || "Lainnya",
+              rating: b.rating ?? 0,
+              price: numPrice === 0 ? "Gratis" : `Rp${numPrice.toLocaleString("id-ID")}`,
+            };
+          });
+          setDbBooks(normalized);
+        }
+      } catch (err) {
+        console.error("Error fetching books for homepage:", err);
+      } finally {
+        setLoadingBooks(false);
+      }
+    }
+    fetchPublicBooks();
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,9 +81,10 @@ export default function HomePage() {
     }
   };
 
-  const featuredBooks = books.slice(0, 4);
-  const bestSellers = books.filter((b) => b.badge === "Best Seller").slice(0, 4);
-  const heroBooks = books.slice(0, 3);
+  const featuredBooks = dbBooks.slice(0, 4);
+  const bestSellers = dbBooks.filter((b) => b.badge === "Best Seller");
+  const displayBestSellers = bestSellers.length > 0 ? bestSellers.slice(0, 4) : dbBooks.slice(0, 4);
+  const heroBooks = dbBooks.slice(0, 3);
 
   return (
     <div className={styles.page}>
@@ -83,14 +137,18 @@ export default function HomePage() {
                 style={{ transform: i === 1 ? "translateY(-20px)" : "translateY(0)" }}
                 onClick={() => router.push(`/buku/${book.id}`)}
               >
-                <Image
-                  src={book.cover}
-                  alt={book.title}
-                  fill
-                  sizes="120px"
-                  style={{ objectFit: "cover" }}
-                  priority={i === 0}
-                />
+                {book.cover ? (
+                  <Image
+                    src={book.cover}
+                    alt={book.title}
+                    fill
+                    sizes="120px"
+                    style={{ objectFit: "cover" }}
+                    priority={i === 0}
+                  />
+                ) : (
+                  <div style={{ width: "100%", height: "100%", background: "#f0ece4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>📖</div>
+                )}
               </div>
             ))}
           </div>
@@ -132,38 +190,48 @@ export default function HomePage() {
             Lihat Semua <ArrowRight size={16} />
           </button>
         </div>
-        <div className={styles.bookGrid}>
-          {featuredBooks.map((book) => (
-            <div
-              key={book.id}
-              className={styles.bookCard}
-              onClick={() => router.push(`/buku/${book.id}`)}
-            >
-              <div className={styles.bookCoverWrap}>
-                {book.badge && <span className={styles.bookBadge}>{book.badge}</span>}
-                <Image
-                  src={book.cover}
-                  alt={book.title}
-                  fill
-                  sizes="(max-width:768px) 50vw, 220px"
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-              <div className={styles.bookInfo}>
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
-                <div className={styles.bookMeta}>
-                  <span className={styles.rating}>
-                    <Star size={13} fill="#FDBA12" color="#FDBA12" />
-                    {book.rating}
-                  </span>
-                  <span className={styles.genre}>{book.genre}</span>
+        {loadingBooks ? (
+          <div style={{ padding: "40px 0", textAlign: "center", color: "#9e8268" }}>Memuat buku...</div>
+        ) : featuredBooks.length > 0 ? (
+          <div className={styles.bookGrid}>
+            {featuredBooks.map((book) => (
+              <div
+                key={book.id}
+                className={styles.bookCard}
+                onClick={() => router.push(`/buku/${book.id}`)}
+              >
+                <div className={styles.bookCoverWrap}>
+                  {book.badge && <span className={styles.bookBadge}>{book.badge}</span>}
+                  {book.cover ? (
+                    <Image
+                      src={book.cover}
+                      alt={book.title}
+                      fill
+                      sizes="(max-width:768px) 50vw, 220px"
+                      style={{ objectFit: "cover" }}
+                    />
+                  ) : (
+                    <div style={{ width: "100%", height: "100%", background: "#f0ece4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>📖</div>
+                  )}
                 </div>
-                <strong>{book.price}</strong>
+                <div className={styles.bookInfo}>
+                  <h3>{book.title}</h3>
+                  <p>{book.author}</p>
+                  <div className={styles.bookMeta}>
+                    <span className={styles.rating}>
+                      <Star size={13} fill="#FDBA12" color="#FDBA12" />
+                      {book.rating}
+                    </span>
+                    <span className={styles.genre}>{book.genre}</span>
+                  </div>
+                  <strong>{book.price}</strong>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ padding: "40px 0", textAlign: "center", color: "#9e8268" }}>Belum ada buku yang diunggah.</div>
+        )}
       </section>
 
       {/* ===== BEST SELLER ===== */}
@@ -177,38 +245,48 @@ export default function HomePage() {
             Lihat Semua <ArrowRight size={16} />
           </button>
         </div>
-        <div className={styles.bookGrid}>
-          {bestSellers.map((book) => (
-            <div
-              key={book.id}
-              className={styles.bookCard}
-              onClick={() => router.push(`/buku/${book.id}`)}
-            >
-              <div className={styles.bookCoverWrap}>
-                {book.badge && <span className={styles.bookBadge}>{book.badge}</span>}
-                <Image
-                  src={book.cover}
-                  alt={book.title}
-                  fill
-                  sizes="(max-width:768px) 50vw, 220px"
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-              <div className={styles.bookInfo}>
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
-                <div className={styles.bookMeta}>
-                  <span className={styles.rating}>
-                    <Star size={13} fill="#FDBA12" color="#FDBA12" />
-                    {book.rating}
-                  </span>
-                  <span className={styles.genre}>{book.genre}</span>
+        {loadingBooks ? (
+          <div style={{ padding: "40px 0", textAlign: "center", color: "#9e8268" }}>Memuat buku...</div>
+        ) : displayBestSellers.length > 0 ? (
+          <div className={styles.bookGrid}>
+            {displayBestSellers.map((book) => (
+              <div
+                key={book.id}
+                className={styles.bookCard}
+                onClick={() => router.push(`/buku/${book.id}`)}
+              >
+                <div className={styles.bookCoverWrap}>
+                  {book.badge && <span className={styles.bookBadge}>{book.badge}</span>}
+                  {book.cover ? (
+                    <Image
+                      src={book.cover}
+                      alt={book.title}
+                      fill
+                      sizes="(max-width:768px) 50vw, 220px"
+                      style={{ objectFit: "cover" }}
+                    />
+                  ) : (
+                    <div style={{ width: "100%", height: "100%", background: "#f0ece4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>📖</div>
+                  )}
                 </div>
-                <strong>{book.price}</strong>
+                <div className={styles.bookInfo}>
+                  <h3>{book.title}</h3>
+                  <p>{book.author}</p>
+                  <div className={styles.bookMeta}>
+                    <span className={styles.rating}>
+                      <Star size={13} fill="#FDBA12" color="#FDBA12" />
+                      {book.rating}
+                    </span>
+                    <span className={styles.genre}>{book.genre}</span>
+                  </div>
+                  <strong>{book.price}</strong>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ padding: "40px 0", textAlign: "center", color: "#9e8268" }}>Belum ada buku yang diunggah.</div>
+        )}
       </section>
 
       {/* ===== CTA PREMIUM ===== */}
