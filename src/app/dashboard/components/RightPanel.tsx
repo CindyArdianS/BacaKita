@@ -70,34 +70,7 @@ export default function RightPanel() {
         </div>
       </div>
 
-      {/* Continue Reading */}
-      <div 
-        className={styles.readingCard} 
-        style={{ cursor: "pointer" }} 
-        onClick={() => router.push("/baca/1")}
-      >
-        <h4>Lanjutkan Membaca</h4>
 
-        <Image
-          src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500"
-          alt="Atomic Habits"
-          width={280}
-          height={180}
-          style={{ objectFit: "cover", borderRadius: "12px", width: "100%", marginTop: "12px", marginBottom: "12px" }}
-        />
-
-        <h5>Atomic Habits</h5>
-        <small>James Clear</small>
-
-        <div className={styles.progress}>
-          <div
-            className={styles.progressValue}
-            style={{ width: "68%" }}
-          />
-        </div>
-
-        <span>68% selesai</span>
-      </div>
 
 
       {/* Premium */}

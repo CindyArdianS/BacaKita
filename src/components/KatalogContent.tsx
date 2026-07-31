@@ -76,10 +76,12 @@ export default function KatalogContent({ hideNavbar = false }: { hideNavbar?: bo
       const { data, error } = await supabase
         .from("books")
         .select("*")
+        .not("pdf_url", "is", null)
         .order("created_at", { ascending: false });
       try {
         if (error) throw error;
-        setAllBooks((data || []).map((book) => normalizeBook(book as DbBook)));
+        const adminUploadedBooks = (data || []).filter((b: any) => b.pdf_url && b.pdf_url.trim() !== "");
+        setAllBooks(adminUploadedBooks.map((book) => normalizeBook(book as DbBook)));
       } finally {
         setLoadingBooks(false);
       }

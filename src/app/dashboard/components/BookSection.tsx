@@ -50,11 +50,12 @@ export default function BookSection() {
         const { data, error } = await supabase
           .from("books")
           .select("*")
-          .eq("is_active", true)
+          .not("pdf_url", "is", null)
           .order("created_at", { ascending: false });
         if (error) throw error;
 
-        const books = (data || []).map((book) => normalizeBook(book as DbBook));
+        const adminUploadedBooks = (data || []).filter((b: any) => b.pdf_url && b.pdf_url.trim() !== "");
+        const books = adminUploadedBooks.map((book) => normalizeBook(book as DbBook));
         console.log("SUCCESS Dashboard User fetch books", { count: books.length, books });
         setBestSellers(books.filter((book) => book.badge === "Best Seller").slice(0, 6));
         // created_at adalah sumber kebenaran untuk buku baru. publish_year
