@@ -44,12 +44,10 @@ export default function HomePage() {
         const { data, error } = await supabase
           .from("books")
           .select("*")
-          .not("pdf_url", "is", null)
           .order("created_at", { ascending: false });
 
         if (!error && data) {
-          const adminUploadedBooks = data.filter((b: DbBook) => b.pdf_url && b.pdf_url.trim() !== "");
-          const normalized = adminUploadedBooks.map((b: DbBook) => {
+          const normalized = data.map((b: DbBook) => {
             const numPrice = b.harga ?? b.price ?? 0;
             return {
               id: b.id,
